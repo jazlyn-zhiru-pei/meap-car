@@ -1,39 +1,88 @@
 # Meap Car
 
-An interactive engine-sound and generative-music system built with a Meap board and a Max patch. Changes in engine speed affect the music tempo and visual playback. Four touch-pad modes select different musical and visual scenes.
+Meap Car is an interactive sound and visual project built with a Meap board, Arduino code, and Max. A synthesized engine drives the musical tempo, while touch pads and knobs change the musical mode, note behavior, and visual scene.
 
-## Repository contents
-
-- `firmware/Meapcar/Meapcar.ino`: embedded synthesis and music-generation code. The sketch is inside a matching Arduino folder.
-- `max/Meapcar.maxpat`: editable Max patch for visual playback, MIDI controls, and serial communication.
-- `max/bg0.mp4` through `max/bg3.mp4`: the four video backgrounds loaded by the patch. Keep these names and keep the files alongside the patch.
-- `docs/Meap Car Design Overview.docx`: design overview and control mappings.
-
-## Requirements
-
-- The Meap hardware used for the project.
-- Arduino development environment configured for that board, including the `Meap.h` library and its dependencies. Board and library versions should be documented from the original working setup before claiming reproducibility.
-- Max with Jitter video playback support. The patch file records the original Max version in its `appversion` metadata.
-- USB/serial connection and MIDI routing appropriate to the original hardware setup.
-
-## Opening the project
-
-1. Download the complete repository rather than only the patch file.
-2. Open `firmware/Meapcar/Meapcar.ino` in the configured Arduino environment and select the correct board and port before uploading.
-3. Open `max/Meapcar.maxpat` in Max. Ensure the four background videos can be found. If Max cannot locate them, add the `max/` folder to its file search path.
-4. The patch currently uses `serial c 115200`. Select the connected board's actual serial port rather than assuming port `c` is correct on another computer.
-5. Configure MIDI output for the board. The firmware uses CC 1 for engine speed and CC 2 for ignition. Check these against the actual routing when connecting the setup.
-
-## Controls and behavior
-
-The firmware combines engine-like wavetable synthesis and modulation with generative musical parts. Engine speed is smoothed and linked to musical timing. Touch pads select Major, Minor, Cyber, and Tension modes; the two potentiometers control note release and musical complexity.
-
-The Max patch receives `SCENE` and `CHAOS` messages over serial at 115200 baud. It switches and blends background videos, adjusts playback rate through the control mapping, and applies a complexity-dependent visual effect.
+The project connects engine synthesis, generative music, and video through a shared set of controls. Increasing the throttle changes the engine sound and speeds up the music; changing modes switches the musical rules and the video background.
 
 ## Demo
 
-The original demonstration movie is kept outside this repository. Add the hosted video link here after upload; the same video can be embedded on the portfolio page.
+[Watch the Meap Car demonstration on YouTube](https://youtu.be/Y0rzvjF_9ew)
 
-## Status
+## Sound and interaction
 
-This folder was prepared from the supplied project files. The patch JSON and media references have been checked. Firmware compilation, hardware behavior, and Max playback have not been tested in this environment.
+### Engine synthesis
+
+Two wavetable oscillators are multiplied to create a rough, engine-like texture. One follows the engine-speed value; the other runs at 2.5 times that frequency. Smoothing gives speed changes some inertia, and filtered noise adds a wind-like layer as the engine accelerates.
+
+### Generative music
+
+The musical layer combines chords with a generated melody. Its timing follows engine speed. Four touch-pad modes select different scales, progressions, waveforms, and note-generation rules:
+
+| Pad | Mode | Waveform | Musical behavior |
+| --- | --- | --- | --- |
+| 0 | Major | Sine | Repeating arpeggios with passing notes and octave changes as complexity increases |
+| 1 | Minor | Triangle | A lyrical pattern with additional notes and tension at higher complexity |
+| 2 | Cyber | Sawtooth | Lower-register patterns, syncopation, and octave jumps |
+| 3 | Tension | Square | Probabilistic note triggers and a wider register at higher complexity |
+
+The first potentiometer changes note release. The second changes complexity, affecting note density, rhythmic variation, and pitch choices according to the selected mode. Touching a pad starts its musical mode; releasing the active pad stops the music.
+
+### Visuals in Max
+
+The Max patch plays four looping backgrounds and fades between them when the musical mode changes. The throttle control changes video playback speed, while the complexity value controls a strobe effect.
+
+The firmware sends `SCENE` and `CHAOS` messages to Max over serial at 115200 baud. MIDI control messages handle engine speed and ignition.
+
+## Controls
+
+| Control | Function |
+| --- | --- |
+| MIDI CC 1 | Engine speed and musical tempo |
+| MIDI CC 2 | Ignition on/off |
+| Touch pads 0–3 | Major, Minor, Cyber, and Tension modes |
+| Potentiometer 0 | Note release time |
+| Potentiometer 1 | Musical complexity and visual strobe |
+
+## Files
+
+```text
+meap-car/
+├── firmware/
+│   └── Meapcar/
+│       └── Meapcar.ino
+├── max/
+│   ├── Meapcar.maxpat
+│   ├── bg0.mp4
+│   ├── bg1.mp4
+│   ├── bg2.mp4
+│   └── bg3.mp4
+├── docs/
+│   └── Meap Car Design Overview.docx
+└── README.md
+```
+
+The Arduino sketch contains the synthesis and music-generation logic. The Max patch handles video and communication. The design overview provides more detail about the sound layers and mappings.
+
+## Requirements
+
+- A Meap board with its potentiometers and touch pads.
+- An Arduino development environment configured for the board, with the Meap library (`Meap.h`) and its dependencies installed.
+- Max with Jitter support. The supplied patch was saved in **Max 8.5.8**.
+- Serial and MIDI connections configured for the board.
+- Headphones or speakers connected to the board's audio output.
+
+## Running the project
+
+1. Download or clone the complete repository so the Max patch and all four video files are included.
+2. Open `firmware/Meapcar/Meapcar.ino` in the Arduino environment. Select the appropriate board and port, then compile and upload the sketch.
+3. Close the Arduino Serial Monitor before opening the serial connection in Max.
+4. Open `max/Meapcar.maxpat`. Keep `bg0.mp4` through `bg3.mp4` alongside it. If the videos are not found, add the `max/` directory to Max's file search path or load them through the patch's `read` messages.
+5. Configure the serial object for the connected board. The saved patch uses `serial c 115200`; the port identifier may need to change on another computer. Use the object's port-listing function to identify the correct port.
+6. Configure the MIDI output used by the patch to reach the board's MIDI input. Confirm CC 1 controls speed and CC 2 controls ignition.
+7. Start the patch's visual and serial polling controls. Turn on the ignition and raise the throttle to hear the engine. Touch a mode pad to start the musical layer, then use the potentiometers to change release and complexity.
+
+The firmware runs on the Meap board; opening the Max patch alone does not run the synthesis. The serial port and MIDI routing are specific to the connected setup and should be checked before use.
+
+## Author
+
+Jazlyn Pei
