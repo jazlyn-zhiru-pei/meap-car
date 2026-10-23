@@ -1,8 +1,10 @@
 # Meap Car
 
-Meap Car is an interactive sound and visual project built with a Meap board, Arduino code, and Max. A synthesized engine drives the musical tempo, while touch pads and knobs change the musical mode, note behavior, and visual scene.
+Meap Car is an interactive audio-visual project centered on oscillator-based synthesis in Arduino code running on a Meap board. All audio, including the engine sound, background melodies, and harmonies, is generated in real time on the board rather than played from recordings.
 
-The project connects engine synthesis, generative music, and video through a shared set of controls. Increasing the throttle changes the engine sound and speeds up the music; changing modes switches the musical rules and the video background.
+Touch pads and knobs shape the musical mode, complexity, note release, and engine behavior. The engine, music, and visuals respond together. Max receives control data from the board and handles video playback and visual effects; it is not the audio-synthesis engine.
+
+![Meap board and connected touch-pad controller](docs/meap-car-hardware.jpg)
 
 ## Demo
 
@@ -16,7 +18,7 @@ Two wavetable oscillators are multiplied to create a rough, engine-like texture.
 
 ### Generative music
 
-The musical layer combines chords with a generated melody. Its timing follows engine speed. Four touch-pad modes select different scales, progressions, waveforms, and note-generation rules:
+Oscillator voices generate both chords and melody on the board. Scales, progressions, rhythmic rules, and envelopes are defined in the Arduino sketch. Musical timing also responds to engine speed. Four touch-pad modes select different scales, progressions, waveforms, and note-generation rules:
 
 | Pad | Mode | Waveform | Musical behavior |
 | --- | --- | --- | --- |
@@ -29,7 +31,7 @@ The first potentiometer changes note release. The second changes complexity, aff
 
 ### Visuals in Max
 
-The Max patch plays four looping backgrounds and fades between them when the musical mode changes. The throttle control changes video playback speed, while the complexity value controls a strobe effect.
+Max receives the board’s control data and plays four looping backgrounds and fades between them when the musical mode changes. The throttle control changes video playback speed, while the complexity value controls a strobe effect.
 
 The firmware sends `SCENE` and `CHAOS` messages to Max over serial at 115200 baud. MIDI control messages handle engine speed and ignition.
 
@@ -57,7 +59,8 @@ meap-car/
 │   ├── bg2.mp4
 │   └── bg3.mp4
 ├── docs/
-│   └── Meap Car Design Overview.docx
+│   ├── Meap Car Design Overview.docx
+│   └── meap-car-hardware.jpg
 └── README.md
 ```
 
@@ -82,6 +85,10 @@ The Arduino sketch contains the synthesis and music-generation logic. The Max pa
 7. Start the patch's visual and serial polling controls. Turn on the ignition and raise the throttle to hear the engine. Touch a mode pad to start the musical layer, then use the potentiometers to change release and complexity.
 
 The firmware runs on the Meap board; opening the Max patch alone does not run the synthesis. The serial port and MIDI routing are specific to the connected setup and should be checked before use.
+
+## Acknowledgments
+
+Thank you to Mason, my instructor at NYU, for providing the Meap board used in this project.
 
 ## Author
 
