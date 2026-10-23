@@ -4,8 +4,6 @@ Meap Car is an interactive audio-visual project centered on oscillator-based syn
 
 Touch pads and knobs shape the musical mode, complexity, note release, and engine behavior. The engine, music, and visuals respond together. Max receives control data from the board and handles video playback and visual effects; it is not the audio-synthesis engine.
 
-![Meap board and connected touch-pad controller](docs/meap-car-hardware.jpg)
-
 ## Demo
 
 [Watch the Meap Car demonstration on YouTube](https://youtu.be/Y0rzvjF_9ew)
